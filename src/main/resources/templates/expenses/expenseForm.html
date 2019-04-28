@@ -1,0 +1,19 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Enter new expense</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+    <div>
+        <form method="post">
+            <input type="date" name="date" value="2019-04-28" placeholder="Дата"/>
+            <input type="time" name="time" value="23:23" placeholder="Время"/>
+            <input type="text" name="text" placeholder="Описание"/>
+            <input type="number" name="cost" placeholder="Стоимость" step="0.01"/>
+            <input type="text" name="comment" placeholder="Комментарий"/>
+            <button type="submit">Добавить</button>
+        </form>
+    </div>
+</body>
+</html>

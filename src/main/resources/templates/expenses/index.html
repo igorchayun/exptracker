@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+    <table>
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Text</th>
+                <th>Cost</th>
+                <th>Comment</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="expense : ${expenses}">
+                <td th:text="${expense.id}"></td>
+                <td th:text="${expense.date}"></td>
+                <td th:text="${expense.time}"></td>
+                <td th:text="${expense.text}"></td>
+                <td th:text="${expense.cost}"></td>
+                <td th:text="${expense.comment}"></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
