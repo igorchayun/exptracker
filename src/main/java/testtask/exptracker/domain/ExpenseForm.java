@@ -2,7 +2,6 @@ package testtask.exptracker.domain;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Past;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -10,7 +9,6 @@ public class ExpenseForm {
 
     @NotNull
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    @Past
     private LocalDate date;
 
     @NotNull

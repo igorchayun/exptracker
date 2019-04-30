@@ -6,8 +6,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import testtask.exptracker.domain.Expense;
 import testtask.exptracker.domain.ExpenseForm;
 import testtask.exptracker.repository.ExpenseRepository;
@@ -17,15 +15,10 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("/expenses")
-public class ExpensesController implements WebMvcConfigurer {
+public class ExpensesController {
 
     @Autowired
     private ExpenseRepository expenseRepository;
-
-    @Override
-    public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/results").setViewName("expenses/results");
-    }
 
     @GetMapping("/new")
     public String showForm(ExpenseForm expenseForm) {
@@ -42,7 +35,7 @@ public class ExpensesController implements WebMvcConfigurer {
         Expense expense = expenseForm.convertToExpense();
         expenseRepository.save(expense);
 
-        return "expenses/results";
+        return "expenses/result";
     }
 
     @GetMapping
