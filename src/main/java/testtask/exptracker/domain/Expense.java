@@ -9,16 +9,24 @@ import java.time.LocalTime;
 
 @Entity
 public class Expense {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
     private LocalDate date;
+
     private LocalTime time;
+
     private String text;
+
     private Double cost;
+
     private String comment;
+
     public Expense() {
     }
+
     public Expense(LocalDate date, LocalTime time, String text, Double cost, String comment) {
         this.date = date;
         this.time = time;
