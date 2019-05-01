@@ -14,7 +14,6 @@ import testtask.exptracker.domain.ExpenseForm;
 import testtask.exptracker.domain.User;
 import testtask.exptracker.repository.ExpenseRepository;
 import javax.validation.Valid;
-import java.util.Map;
 
 @Controller
 @RequestMapping("/expenses")
@@ -45,8 +44,7 @@ public class ExpensesController {
     }
 
     @GetMapping
-    public String index(@RequestParam(required = false) String filter, Model model) {
-        //Iterable<Expense> expenses = expenseRepository.findAll();
+    public String index(@RequestParam(required = false, defaultValue = "") String filter, Model model) {
         Iterable<Expense> expenses;
 
         if (filter != null && !filter.isEmpty()) {
