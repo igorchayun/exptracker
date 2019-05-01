@@ -6,6 +6,9 @@
 </head>
 <body>
     <a href="/expenses/new">Enter a new expense</a><br>
+    <form th:action="@{/logout}" method="post">
+        <input type="submit" value="Sign Out"/>
+    </form>
     <h3>List of expenses</h3>
     <table>
         <thead>
