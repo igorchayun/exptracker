@@ -7,7 +7,7 @@
 <body>
     <a href="/expenses/new">Enter a new expense</a><br>
     <form th:action="@{/logout}" method="post">
-        <input type="submit" value="Sign Out"/>
+        <input type="submit" value="Log Out"/>
     </form>
     <h3>List of expenses</h3>
     <table>
@@ -19,6 +19,7 @@
                 <th>Description</th>
                 <th>Cost</th>
                 <th>Comment</th>
+                <th>Author</th>
             </tr>
         </thead>
         <tbody>
@@ -29,6 +30,7 @@
                 <td th:text="${expense.text}"></td>
                 <td th:text="${expense.cost}"></td>
                 <td th:text="${expense.comment}"></td>
+                <td th:text="${expense.authorName}"></td>
             </tr>
         </tbody>
     </table>

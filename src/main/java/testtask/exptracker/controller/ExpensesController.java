@@ -1,6 +1,7 @@
 package testtask.exptracker.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import testtask.exptracker.domain.Expense;
 import testtask.exptracker.domain.ExpenseForm;
+import testtask.exptracker.domain.User;
 import testtask.exptracker.repository.ExpenseRepository;
 import javax.validation.Valid;
 import java.util.Map;
@@ -25,13 +27,16 @@ public class ExpensesController {
     }
 
     @PostMapping("/new")
-    public String saveExpense(@Valid ExpenseForm expenseForm, BindingResult bindingResult){
+    public String saveExpense(
+            @AuthenticationPrincipal User user,
+            @Valid ExpenseForm expenseForm, BindingResult bindingResult
+    ){
 
         if (bindingResult.hasErrors()) {
             return "expenses/form";
         }
 
-        Expense expense = expenseForm.convertToExpense();
+        Expense expense = expenseForm.convertToExpense(user);
         expenseRepository.save(expense);
 
         return "expenses/result";

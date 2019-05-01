@@ -75,7 +75,7 @@ public class ExpenseForm {
         this.comment = comment;
     }
 
-    public Expense convertToExpense(){
-        return new Expense(date, time, text, cost, comment);
+    public Expense convertToExpense(User user){
+        return new Expense(date, time, text, cost, comment, user);
     }
 }

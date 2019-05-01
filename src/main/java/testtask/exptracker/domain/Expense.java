@@ -1,9 +1,6 @@
 package testtask.exptracker.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -24,10 +21,15 @@ public class Expense {
 
     private String comment;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    private User author;
+
     public Expense() {
     }
 
-    public Expense(LocalDate date, LocalTime time, String text, Double cost, String comment) {
+    public Expense(LocalDate date, LocalTime time, String text, Double cost, String comment, User user) {
+        this.author = user;
         this.date = date;
         this.time = time;
         this.text = text;
@@ -55,7 +57,7 @@ public class Expense {
         return comment;
     }
 
-    public void setcComment(String tag) {
+    public void setComment(String tag) {
         this.comment = comment;
     }
 
@@ -82,4 +84,17 @@ public class Expense {
     public void setCost(Double cost) {
         this.cost = cost;
     }
+
+    public User getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
+    }
+
+    public String getAuthorName() {
+        return author != null ? author.getUsername() : "<none>";
+    }
+
 }
