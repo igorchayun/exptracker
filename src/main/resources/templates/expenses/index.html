@@ -5,11 +5,15 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
-    <a href="/expenses/new">Enter a new expense</a><br>
     <form th:action="@{/logout}" method="post">
         <input type="submit" value="Log Out"/>
     </form>
+    <a href="/expenses/new">Enter a new expense</a><br>
     <h3>List of expenses</h3>
+    <form method="get">
+        <input type="text" name="filter" th:value="${filter}">
+        <button type="submit">Find</button>
+    </form>
     <table>
         <thead>
             <tr>

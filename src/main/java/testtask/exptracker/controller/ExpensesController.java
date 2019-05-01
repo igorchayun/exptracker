@@ -3,10 +3,12 @@ package testtask.exptracker.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import testtask.exptracker.domain.Expense;
 import testtask.exptracker.domain.ExpenseForm;
 import testtask.exptracker.domain.User;
@@ -43,9 +45,19 @@ public class ExpensesController {
     }
 
     @GetMapping
-    public String index(Map<String, Object> model) {
-        Iterable<Expense> expenses = expenseRepository.findAll();
-        model.put("expenses", expenses);
+    public String index(@RequestParam(required = false) String filter, Model model) {
+        //Iterable<Expense> expenses = expenseRepository.findAll();
+        Iterable<Expense> expenses;
+
+        if (filter != null && !filter.isEmpty()) {
+            expenses = expenseRepository.findByTextOrComment(filter, filter);
+        } else {
+            expenses = expenseRepository.findAll();
+        }
+
+        model.addAttribute("expenses", expenses);
+        model.addAttribute("filter", filter);
+
         return "expenses/index";
     }
 
