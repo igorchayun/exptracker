@@ -10,7 +10,7 @@
     <table>
         <tr>
             <td>User Id:</td>
-            <td><input type="hidden" th:field="*{id}" /></td>
+            <td><input type="hidden" th:value="*{id}" name="userId"/></td>
         </tr>
         <tr>
             <td>User Name:</td>
@@ -18,7 +18,16 @@
         </tr>
         <tr>
             <td>User Roles:</td>
-            <td th:each="r : ${roles}" th:field="${r}"></td>
+            <td><ul>
+                <li th:each="role : ${roles}">
+                    <input type="checkbox" th:field="*{roles}" th:value="${role}" />
+                    <label th:for="${#ids.prev('roles')}"
+                           th:text="${#conversions.convert(role,'String')}"></label>
+                </li>
+            </ul></td>
+        </tr>
+        <tr>
+            <td><button type="submit">Save</button></td>
         </tr>
     </table>
 </form>
