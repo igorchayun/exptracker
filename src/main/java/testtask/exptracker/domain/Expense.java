@@ -1,6 +1,10 @@
 package testtask.exptracker.domain;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.*;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -11,12 +15,19 @@ public class Expense {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @NotNull
+    @PastOrPresent
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate date;
 
+    @NotNull
+    @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
     private LocalTime time;
 
     private String text;
 
+    @NotNull
+    @Min(0)
     private Double cost;
 
     private String comment;
@@ -57,7 +68,7 @@ public class Expense {
         return comment;
     }
 
-    public void setComment(String tag) {
+    public void setComment(String comment) {
         this.comment = comment;
     }
 

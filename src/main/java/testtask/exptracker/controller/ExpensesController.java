@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import testtask.exptracker.domain.Expense;
-import testtask.exptracker.domain.ExpenseForm;
 import testtask.exptracker.domain.User;
 import testtask.exptracker.repository.ExpenseRepository;
 import javax.validation.Valid;
@@ -23,28 +22,29 @@ public class ExpensesController {
     private ExpenseRepository expenseRepository;
 
     @GetMapping("/new")
-    public String showForm(ExpenseForm expenseForm) {
-        return "expenses/form";
+    public String showForm(Expense expense, Model model) {
+        model.addAttribute("expense", expense);
+        return "expenseEdit";
     }
 
     @PostMapping("/new")
     public String saveExpense(
             @AuthenticationPrincipal User user,
-            @Valid ExpenseForm expenseForm, BindingResult bindingResult
+            @Valid Expense expense,
+            BindingResult bindingResult
     ){
-
         if (bindingResult.hasErrors()) {
-            return "expenses/form";
+            return "expenseEdit";
         }
 
-        Expense expense = expenseForm.convertToExpense(user);
+        expense.setAuthor(user);
         expenseRepository.save(expense);
 
-        return "expenses/result";
+        return "redirect:/expenses";
     }
 
     @GetMapping
-    public String index(@RequestParam(required = false, defaultValue = "") String filter, Model model) {
+    public String expensesList(@RequestParam(required = false, defaultValue = "") String filter, Model model) {
         Iterable<Expense> expenses;
 
         if (filter != null && !filter.isEmpty()) {
@@ -56,7 +56,7 @@ public class ExpensesController {
         model.addAttribute("expenses", expenses);
         model.addAttribute("filter", filter);
 
-        return "expenses/index";
+        return "expenses";
     }
 
 }
