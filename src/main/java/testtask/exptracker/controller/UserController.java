@@ -35,7 +35,7 @@ public class UserController {
     public String userSave(User user, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
-            return "expenseEdit";
+            return "userEdit";
         }
 
         user.setPassword(userRepository.getOne(user.getId()).getPassword());
