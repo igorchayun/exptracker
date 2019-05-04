@@ -12,13 +12,13 @@ import testtask.exptracker.repository.UserRepository;
 
 @Controller
 @RequestMapping("/users")
-@PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
+@PreAuthorize("hasAnyAuthority('ADMIN','MANAGER')")
 public class UserController {
     @Autowired
     private UserRepository userRepository;
 
     @GetMapping
-    public String userList(@RequestParam(required = false, defaultValue = "") String filter, Model model) {
+    public String userList(@RequestParam(required = false, defaultValue = "") String userFilter, Model model) {
         model.addAttribute("users", userRepository.findAll());
         return "users";
     }
