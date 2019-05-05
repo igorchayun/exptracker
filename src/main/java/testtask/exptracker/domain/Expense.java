@@ -1,5 +1,6 @@
 package testtask.exptracker.domain;
 
+import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.*;
 import javax.validation.constraints.Min;
@@ -24,12 +25,14 @@ public class Expense {
     @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
     private LocalTime time;
 
+    @Length(max = 255, message = "Description too long")
     private String text;
 
     @NotNull
     @Min(0)
     private Double cost;
 
+    @Length(max = 255, message = "Comment too long")
     private String comment;
 
     @ManyToOne(fetch = FetchType.EAGER)

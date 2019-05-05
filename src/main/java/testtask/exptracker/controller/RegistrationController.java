@@ -2,19 +2,18 @@ package testtask.exptracker.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import testtask.exptracker.domain.Role;
 import testtask.exptracker.domain.User;
-import testtask.exptracker.repository.UserRepository;
+import testtask.exptracker.service.UserService;
 import javax.validation.Valid;
-import java.util.Collections;
-import java.util.Map;
 
 @Controller
 public class RegistrationController {
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @GetMapping("/registration")
     public String registration() {
@@ -22,17 +21,17 @@ public class RegistrationController {
     }
 
     @PostMapping("/registration")
-    public String addUser(@Valid User user, Map<String, Object> model) {
-        User userFromDb = userRepository.findByUsername(user.getUsername());
+    public String addUser(@Valid User user, BindingResult bindingResult, Model model) {
 
-        if (userFromDb != null) {
-            model.put("message", "User exist!");
+        if (bindingResult.hasErrors()) {
             return "registration";
         }
 
-        user.setActive(true);
-        user.setRoles(Collections.singleton(Role.USER));
-        userRepository.save(user);
+        if (!userService.addUser(user)) {
+            model.addAttribute("usernameError", "User exists!");
+            return "registration";
+        }
+
         return "redirect:/login";
     }
 }

@@ -4,7 +4,7 @@
     <title>Expenses tracker web application </title>
 </head>
 <body>
-<div th:if="${message}" th:text="*{message}">
+<div th:if="${usernameError}" th:text="*{usernameError}">
 </div>
 <h3>Register new user</h3>
 <form th:action="@{/registration}" method="post">

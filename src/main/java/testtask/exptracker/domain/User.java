@@ -1,8 +1,10 @@
 package testtask.exptracker.domain;
 
+import org.hibernate.validator.constraints.Length;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.Set;
 
@@ -12,7 +14,10 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    @Length(max = 255, message = "Username too long")
+    @NotNull
     private String username;
+    @NotNull
     private String password;
     private boolean active;
 

@@ -9,6 +9,11 @@
     <input type="submit" value="Log Out"/>
 </form>
 <h3>List of users</h3>
+<a href="/users/new">Add new user</a>
+<form method="get">
+    <input type="text" name="filterUsr" th:value="${filterUsr}">
+    <button type="submit">Find</button>
+</form>
 <table>
     <thead>
     <tr>

@@ -8,40 +8,49 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import testtask.exptracker.domain.Role;
 import testtask.exptracker.domain.User;
-import testtask.exptracker.repository.UserRepository;
+import testtask.exptracker.service.UserService;
+
+import javax.validation.Valid;
 
 @Controller
 @RequestMapping("/users")
 @PreAuthorize("hasAnyAuthority('ADMIN','MANAGER')")
 public class UserController {
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @GetMapping
-    public String userList(@RequestParam(required = false, defaultValue = "") String userFilter, Model model) {
-        model.addAttribute("users", userRepository.findAll());
+    public String userList(@RequestParam(required = false, defaultValue = "") String filterUsr, Model model) {
+        model.addAttribute("users", userService.findUsers(filterUsr));
         return "users";
     }
 
     @GetMapping("{user}")
     public String userEditForm(@PathVariable User user, Model model) {
-        user.setPassword("");
         model.addAttribute("user", user);
         model.addAttribute("allRoles", Role.values());
         return "userEdit";
     }
 
     @PostMapping
-    public String userSave(User user, BindingResult bindingResult) {
+    public String userSave(@Valid User user, @RequestParam String newPassword, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             return "userEdit";
         }
 
-        user.setPassword(userRepository.getOne(user.getId()).getPassword());
-
-        userRepository.save(user);
+        userService.saveUser(user, newPassword);
 
         return "redirect:/users";
+    }
+
+    @GetMapping("/new")
+    public String addUserForm() {
+        return "";
+    }
+
+    @PostMapping("/new")
+    public String addUser() {
+        return "";
     }
 }
