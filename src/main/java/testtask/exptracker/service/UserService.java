@@ -32,12 +32,10 @@ public class UserService implements UserDetailsService {
         return user;
     }
 
-    public boolean usernameExist(String username) {
+    private boolean usernameExist(String username) {
         User userFromDb = userRepository.findByUsername(username);
-        if (userFromDb != null) {
-            return true;
-        }
-        return false;
+
+        return userFromDb != null;
     }
 
     public boolean addUser(User user) {
@@ -54,11 +52,18 @@ public class UserService implements UserDetailsService {
         return true;
     }
 
-    public List<User> findUsers(String filter) {
+    public List<User> findAllUsers(String filter) {
         if (filter != null && !filter.isEmpty()) {
             return userRepository.findByUsernameContaining(filter);
         }
         return userRepository.findAll();
+    }
+
+    public List<User> findUsersNonAdmins(String filter) {
+        if (filter != null && !filter.isEmpty()) {
+            return userRepository.findByUsernameContainingAndRolesNotContaining(filter, Role.ADMIN);
+        }
+        return userRepository.findByRolesNotContaining(Role.ADMIN);
     }
 
     public boolean saveUser(User user, String newPassword) {
