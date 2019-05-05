@@ -7,9 +7,11 @@
 <div th:if="${usernameError}" th:text="*{usernameError}">
 </div>
 <h3>Register new user</h3>
-<form th:action="@{/registration}" method="post">
-    <div><label> User Name : <input type="text" name="username"/> </label></div>
-    <div><label> Password: <input type="password" name="password"/> </label></div>
+<form action="#" th:action="@{/registration}" th:object="${user}" method="post">
+    <div><label> User Name : <input type="text" th:value="*{username}" th:field="*{username}" /> </label></div>
+    <div th:if="${#fields.hasErrors('username')}" th:text="${#fields.errors('username')}"></div>
+    <div><label> Password: <input type="password" th:value="*{password}" th:field="*{password}" /> </label></div>
+    <div th:if="${#fields.hasErrors('password')}" th:text="${#fields.errors('password')}"></div>
     <div><input type="submit" value="Sign In"/></div>
 </form>
 </body>

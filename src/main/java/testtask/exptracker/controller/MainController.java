@@ -10,8 +10,7 @@ import testtask.exptracker.domain.User;
 public class MainController {
     @GetMapping("/greeting")
     public String greeting(@AuthenticationPrincipal User user, Model model) {
-        model.addAttribute("username", user.getUsername());
-        model.addAttribute("roles", user.getRoles());
+        model.addAttribute("user", user);
         return "greeting";
     }
 }

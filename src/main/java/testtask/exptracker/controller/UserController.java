@@ -57,7 +57,7 @@ public class UserController {
 
     @GetMapping("/new")
     public String addNewUserForm(User user, Model model) {
-        //model.addAttribute("user", user);
+        model.addAttribute("user", user);
         model.addAttribute("allRoles", Role.values());
         return "userAdd";
     }
@@ -68,7 +68,6 @@ public class UserController {
             model.addAttribute("allRoles", Role.values());
             return "userAdd";
         }
-
         boolean isNewUserAdded = userService.addNewUser(user);
 
         if (!isNewUserAdded) {

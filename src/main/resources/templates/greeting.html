@@ -8,8 +8,8 @@
 <form th:action="@{/logout}" method="post">
     <input type="submit" value="Log Out"/>
 </form>
-<p th:text="'Hello, ' + ${username} + '!'" />
-<a href="/expenses">Expenses</a><br>
-<a href="/users">Users</a><br>
+<p th:text="'Hello, ' + ${user.username} + '!'"></p>
+<p><a href="/expenses">Expenses</a></p>
+<p><a href="/users" th:if="${user.isAdmin() or user.isManager()}" >Users</a></p>
 </body>
 </html>
