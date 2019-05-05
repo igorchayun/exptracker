@@ -10,7 +10,6 @@ import org.springframework.util.StringUtils;
 import testtask.exptracker.domain.Role;
 import testtask.exptracker.domain.User;
 import testtask.exptracker.repository.UserRepository;
-
 import java.util.Collections;
 import java.util.List;
 
@@ -33,10 +32,17 @@ public class UserService implements UserDetailsService {
         return user;
     }
 
-    public boolean addUser(User user) {
-        User userFromDb = userRepository.findByUsername(user.getUsername());
-
+    public boolean usernameExist(String username) {
+        User userFromDb = userRepository.findByUsername(username);
         if (userFromDb != null) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean addUser(User user) {
+
+        if (usernameExist(user.getUsername())) {
             return false;
         }
 
@@ -55,14 +61,27 @@ public class UserService implements UserDetailsService {
         return userRepository.findAll();
     }
 
-    public void saveUser(User user, String newPassword) {
+    public boolean saveUser(User user, String newPassword) {
+        User otherUserFromDb = userRepository.findByUsernameAndIdNot(user.getUsername(),user.getId());
+        if (otherUserFromDb != null) {
+            return false;
+        }
         if (!StringUtils.isEmpty(newPassword)) {
             user.setPassword(passwordEncoder.encode(newPassword));
         }
-        user.setActive(userRepository.getOne(user.getId()).isActive());
-        user.getPassword();
-        //user.setPassword(userRepository.getOne(user.getId()).getPassword());
 
         userRepository.save(user);
+        return true;
+    }
+
+    public boolean addNewUser(User user) {
+        if (usernameExist(user.getUsername())) {
+            return false;
+        }
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        userRepository.save(user);
+        return true;
     }
 }

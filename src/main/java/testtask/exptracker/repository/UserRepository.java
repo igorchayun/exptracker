@@ -12,4 +12,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     User getOne(Long id);
 
     List<User> findByUsernameContaining(String filter);
+
+    User findByUsernameAndIdNot(String username, Long id);
 }

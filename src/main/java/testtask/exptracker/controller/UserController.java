@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import testtask.exptracker.domain.Role;
 import testtask.exptracker.domain.User;
 import testtask.exptracker.service.UserService;
-
 import javax.validation.Valid;
 
 @Controller
@@ -33,24 +32,50 @@ public class UserController {
     }
 
     @PostMapping
-    public String userSave(@Valid User user, @RequestParam String newPassword, BindingResult bindingResult) {
+    public String userEditSave(
+            @Valid User user,
+            BindingResult bindingResult,
+            @RequestParam String newPassword,
+            Model model
+    ) {
 
         if (bindingResult.hasErrors()) {
+            model.addAttribute("allRoles", Role.values());
             return "userEdit";
         }
 
-        userService.saveUser(user, newPassword);
+        boolean isUserSaved = userService.saveUser(user, newPassword);
+
+        if (!isUserSaved) {
+            model.addAttribute("usernameError", "User exists!");
+            model.addAttribute("allRoles", Role.values());
+            return "userEdit";
+        }
 
         return "redirect:/users";
     }
 
     @GetMapping("/new")
-    public String addUserForm() {
-        return "";
+    public String addNewUserForm(User user, Model model) {
+        //model.addAttribute("user", user);
+        model.addAttribute("allRoles", Role.values());
+        return "userAdd";
     }
 
     @PostMapping("/new")
-    public String addUser() {
-        return "";
+    public String addNewUser(@Valid User user, BindingResult bindingResult, Model model) {
+        if(bindingResult.hasErrors()) {
+            model.addAttribute("allRoles", Role.values());
+            return "userAdd";
+        }
+
+        boolean isNewUserAdded = userService.addNewUser(user);
+
+        if (!isNewUserAdded) {
+            model.addAttribute("usernameError", "User exists!");
+            model.addAttribute("allRoles", Role.values());
+            return "userAdd";
+        }
+        return "redirect:/users";
     }
 }

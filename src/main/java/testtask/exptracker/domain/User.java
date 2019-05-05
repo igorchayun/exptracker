@@ -14,16 +14,23 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
     @Length(max = 255, message = "Username too long")
+    @Length(min = 1, message = "Username field must contain more than 1 character")
     @NotNull
     private String username;
+
+    @Length(max = 255, message = "Password too long")
+    @Length(min = 1, message = "Password field must contain more than 1 character")
     @NotNull
     private String password;
+
     private boolean active;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
+    @NotNull
     private Set<Role> roles;
 
     public Long getId() {
