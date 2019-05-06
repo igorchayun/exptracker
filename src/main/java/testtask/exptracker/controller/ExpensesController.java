@@ -6,12 +6,14 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import testtask.exptracker.domain.Expense;
 import testtask.exptracker.domain.User;
 import testtask.exptracker.repository.ExpenseRepository;
 import javax.validation.Valid;
-import java.util.Set;
 
 @Controller
 public class ExpensesController {
@@ -60,7 +62,7 @@ public class ExpensesController {
             }
         } else {
             if (filter != null && !filter.isEmpty()) {
-                expenses = expenseRepository.findByAuthorAndTextOrComment(currentUser, filter, filter);
+                expenses = expenseRepository.findByAuthorAndText(currentUser, filter);
             } else {
                 expenses = expenseRepository.findByAuthor(currentUser);
             }
@@ -77,9 +79,16 @@ public class ExpensesController {
     public String userExpenses(
             @AuthenticationPrincipal User currentUser,
             @PathVariable User user,
+            @RequestParam(required = false, defaultValue = "") String filter,
             Model model
     ) {
-        Set<Expense> expenses = user.getExpenses();
+        Iterable<Expense> expenses;
+        if (filter != null && !filter.isEmpty()) {
+            expenses = expenseRepository.findByAuthorAndText(user, filter);
+        } else {
+            expenses = user.getExpenses();
+        }
+
         model.addAttribute("expenses", expenses);
         return "expenses";
     }
@@ -103,7 +112,6 @@ public class ExpensesController {
         }
 
         expenseRepository.save(editedExpense);
-
         return "redirect:/expenses";
     }
 }
