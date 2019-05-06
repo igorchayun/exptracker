@@ -33,6 +33,17 @@ public class User implements UserDetails {
     @NotNull
     private Set<Role> roles;
 
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Expense> expenses;
+
+    public Set<Expense> getExpenses() {
+        return expenses;
+    }
+
+    public void setExpenses(Set<Expense> expenses) {
+        this.expenses = expenses;
+    }
+
     public Long getId() {
         return id;
     }
@@ -105,4 +116,9 @@ public class User implements UserDetails {
     public boolean isManager() {
         return roles != null && roles.contains(Role.MANAGER);
     }
+
+    public boolean isManagerOnly() {
+        return (isManager() && (roles.size() == 1));
+    }
+
 }

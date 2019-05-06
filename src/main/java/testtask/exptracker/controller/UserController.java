@@ -22,24 +22,25 @@ public class UserController {
 
     @GetMapping
     public String userList(
-            @AuthenticationPrincipal User authUser,
+            @AuthenticationPrincipal User currentUser,
             @RequestParam(required = false, defaultValue = "") String filterUsr,
             Model model
     ) {
-        if (authUser.isAdmin()) {
+        if (currentUser.isAdmin()) {
             model.addAttribute("users", userService.findAllUsers(filterUsr));
         } else {
             model.addAttribute("users", userService.findUsersNonAdmins(filterUsr));
         }
         model.addAttribute("filterUsr", filterUsr);
+        model.addAttribute("curUserIsAdmin", currentUser.isAdmin());
 
         return "users";
     }
 
     @GetMapping("{user}")
-    public String userEditForm(@AuthenticationPrincipal User authUser, @PathVariable User user, Model model) {
+    public String userEditForm(@AuthenticationPrincipal User currentUser, @PathVariable User user, Model model) {
         model.addAttribute("user", user);
-        if (authUser.isAdmin()) {
+        if (currentUser.isAdmin()) {
             model.addAttribute("allRoles", Role.values());
         } else {
             EnumSet<Role> managerRoles = EnumSet.of(Role.USER, Role.MANAGER );
@@ -50,13 +51,13 @@ public class UserController {
 
     @PostMapping
     public String userEditSave(
-            @AuthenticationPrincipal User authUser,
+            @AuthenticationPrincipal User currentUser,
             @Valid User user,
             BindingResult bindingResult,
             @RequestParam String newPassword,
             Model model
     ) {
-        if (authUser.isAdmin()) {
+        if (currentUser.isAdmin()) {
             model.addAttribute("allRoles", Role.values());
         } else {
             model.addAttribute("allRoles", EnumSet.of(Role.USER, Role.MANAGER ));
@@ -76,9 +77,9 @@ public class UserController {
     }
 
     @GetMapping("/new")
-    public String addNewUserForm(@AuthenticationPrincipal User authUser, User user, Model model) {
+    public String addNewUserForm(@AuthenticationPrincipal User currentUser, User user, Model model) {
         model.addAttribute("user", user);
-        if (authUser.isAdmin()) {
+        if (currentUser.isAdmin()) {
             model.addAttribute("allRoles", Role.values());
         } else {
             model.addAttribute("allRoles", EnumSet.of(Role.USER, Role.MANAGER ));
@@ -88,12 +89,12 @@ public class UserController {
 
     @PostMapping("/new")
     public String addNewUser(
-            @AuthenticationPrincipal User authUser,
+            @AuthenticationPrincipal User currentUser,
             @Valid User user,
             BindingResult bindingResult,
             Model model
     ) {
-        if (authUser.isAdmin()) {
+        if (currentUser.isAdmin()) {
             model.addAttribute("allRoles", Role.values());
         } else {
             model.addAttribute("allRoles", EnumSet.of(Role.USER, Role.MANAGER ));

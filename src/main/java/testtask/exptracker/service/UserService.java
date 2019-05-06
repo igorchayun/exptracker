@@ -32,7 +32,7 @@ public class UserService implements UserDetailsService {
         return user;
     }
 
-    private boolean usernameExist(String username) {
+    private boolean isUsernameExist(String username) {
         User userFromDb = userRepository.findByUsername(username);
 
         return userFromDb != null;
@@ -40,7 +40,7 @@ public class UserService implements UserDetailsService {
 
     public boolean addUser(User user) {
 
-        if (usernameExist(user.getUsername())) {
+        if (isUsernameExist(user.getUsername())) {
             return false;
         }
 
@@ -80,7 +80,7 @@ public class UserService implements UserDetailsService {
     }
 
     public boolean addNewUser(User user) {
-        if (usernameExist(user.getUsername())) {
+        if (isUsernameExist(user.getUsername())) {
             return false;
         }
 

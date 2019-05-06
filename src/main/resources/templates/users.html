@@ -20,6 +20,7 @@
         <th>Id</th>
         <th>Name</th>
         <th>Role</th>
+        <th>Active</th>
     </tr>
     </thead>
     <tbody>
@@ -27,7 +28,10 @@
         <td th:text="${user.id}"></td>
         <td th:text="${user.username}"></td>
         <td th:each="r : ${user.roles}" th:text="${r}"></td>
+        <td th:text="${user.active}"></td>
         <td><a th:href="@{'/users/' + ${user.id}}">edit</a></td>
+        <td><a th:href="@{'/user-expenses/' + ${user.id}}"
+               th:if="${curUserIsAdmin} and not ${user.isManagerOnly()}">expenses</a></td>
     </tr>
     </tbody>
 </table>
