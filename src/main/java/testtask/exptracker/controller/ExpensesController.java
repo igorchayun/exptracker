@@ -21,20 +21,20 @@ public class ExpensesController {
 
     @PreAuthorize("hasAnyAuthority('ADMIN','USER')")
     @GetMapping("/expenses/new")
-    public String showForm(Expense expense, Model model) {
+    public String showAddExpenseForm(Expense expense, Model model) {
         model.addAttribute("expense", expense);
-        return "expenseEdit";
+        return "expenseAdd";
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN','USER')")
     @PostMapping("/expenses/new")
-    public String saveExpense(
+    public String addExpense(
             @AuthenticationPrincipal User user,
             @Valid Expense expense,
             BindingResult bindingResult
     ){
         if (bindingResult.hasErrors()) {
-            return "expenseEdit";
+            return "expenseAdd";
         }
 
         expense.setAuthor(user);
@@ -82,5 +82,28 @@ public class ExpensesController {
         Set<Expense> expenses = user.getExpenses();
         model.addAttribute("expenses", expenses);
         return "expenses";
+    }
+
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @GetMapping("/expenses/{expense}")
+    public String showEditExpenseForm(@PathVariable Expense expense, Model model) {
+        model.addAttribute("expense",expense);
+        return "expenseEdit";
+    }
+
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PostMapping("/expenses/{expense}")
+    public String editExpense(
+            @PathVariable Long expense,
+            @Valid Expense editedExpense,
+            BindingResult bindingResult
+    ) {
+        if (bindingResult.hasErrors()) {
+            return "expenseEdit";
+        }
+
+        expenseRepository.save(editedExpense);
+
+        return "redirect:/expenses";
     }
 }
