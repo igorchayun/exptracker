@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import testtask.exptracker.domain.Expense;
 import testtask.exptracker.domain.User;
 import testtask.exptracker.repository.ExpenseRepository;
+import testtask.exptracker.service.ExpenseService;
 import javax.validation.Valid;
-import java.time.LocalDate;
 import java.util.List;
 
 @Controller
@@ -22,6 +22,9 @@ public class ExpensesController {
 
     @Autowired
     private ExpenseRepository expenseRepository;
+
+    @Autowired
+    private ExpenseService expenseService;
 
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     @GetMapping("/expenses")
@@ -32,35 +35,17 @@ public class ExpensesController {
             @RequestParam(required = false, defaultValue = "") String dateTo,
             Model model
     ) {
-        List<Expense> expenses = expenseRepository.filterByAllParams(
+        List<Expense> expenses = expenseService.getExpenses(currentUser, filter, dateFrom, dateTo);
+
+        Double totalExpenses = expenseService.getTotalExpenses(currentUser, filter, dateFrom, dateTo);
+
+        Double averageExpenses = expenseService.getAverageExpenses(
                 currentUser,
                 filter,
-                dateFrom.equals("") ? null : LocalDate.parse(dateFrom),
-                dateTo.equals("") ? null : LocalDate.parse(dateTo)
+                dateFrom,
+                dateTo,
+                totalExpenses
         );
-
-        Double totalExpenses = expenseRepository.sumByAllParams(
-                currentUser,
-                filter,
-                dateFrom.equals("") ? null : LocalDate.parse(dateFrom),
-                dateTo.equals("") ? null : LocalDate.parse(dateTo)
-        );
-
-        Long countDays = expenseRepository.countDaysByAllParams(
-                currentUser,
-                filter,
-                dateFrom.equals("") ? null : LocalDate.parse(dateFrom),
-                dateTo.equals("") ? null : LocalDate.parse(dateTo)
-        );
-
-        double averageExpenses;
-
-        if (totalExpenses == null) {
-            totalExpenses = 0.0;
-            averageExpenses = 0.0;
-        } else {
-            averageExpenses = totalExpenses / countDays;
-        }
 
         model.addAttribute( "user", currentUser);
         model.addAttribute("expenses", expenses);
@@ -131,35 +116,17 @@ public class ExpensesController {
             @RequestParam(required = false, defaultValue = "") String dateTo,
             Model model
     ) {
-        List<Expense> expenses = expenseRepository.filterByAllParams(
+        List<Expense> expenses = expenseService.getExpenses( user, filter, dateFrom, dateTo);
+
+        Double totalExpenses = expenseService.getTotalExpenses( user, filter, dateFrom, dateTo);
+
+        Double averageExpenses = expenseService.getAverageExpenses(
                 user,
                 filter,
-                dateFrom.equals("") ? null : LocalDate.parse(dateFrom),
-                dateTo.equals("") ? null : LocalDate.parse(dateTo)
+                dateFrom,
+                dateTo,
+                totalExpenses
         );
-
-        Double totalExpenses = expenseRepository.sumByAllParams(
-                user,
-                filter,
-                dateFrom.equals("") ? null : LocalDate.parse(dateFrom),
-                dateTo.equals("") ? null : LocalDate.parse(dateTo)
-        );
-
-        Long countDays = expenseRepository.countDaysByAllParams(
-                user,
-                filter,
-                dateFrom.equals("") ? null : LocalDate.parse(dateFrom),
-                dateTo.equals("") ? null : LocalDate.parse(dateTo)
-        );
-
-        double averageExpenses;
-
-        if (totalExpenses == null) {
-            totalExpenses = 0.0;
-            averageExpenses = 0.0;
-        } else {
-            averageExpenses = totalExpenses / countDays;
-        }
 
         model.addAttribute("expenses", expenses);
         model.addAttribute("filter", filter);
@@ -181,35 +148,17 @@ public class ExpensesController {
             Model model
     ) {
 
-        List<Expense> expenses = expenseRepository.filterByAllParams(
+        List<Expense> expenses = expenseService.getExpenses( null, filter, dateFrom, dateTo);
+
+        Double totalExpenses = expenseService.getTotalExpenses( null, filter, dateFrom, dateTo);
+
+        Double averageExpenses = expenseService.getAverageExpenses(
                 null,
                 filter,
-                dateFrom.equals("") ? null : LocalDate.parse(dateFrom),
-                dateTo.equals("") ? null : LocalDate.parse(dateTo)
+                dateFrom,
+                dateTo,
+                totalExpenses
         );
-
-        Double totalExpenses = expenseRepository.sumByAllParams(
-                null,
-                filter,
-                dateFrom.equals("") ? null : LocalDate.parse(dateFrom),
-                dateTo.equals("") ? null : LocalDate.parse(dateTo)
-        );
-
-        Long countDays = expenseRepository.countDaysByAllParams(
-                null,
-                filter,
-                dateFrom.equals("") ? null : LocalDate.parse(dateFrom),
-                dateTo.equals("") ? null : LocalDate.parse(dateTo)
-        );
-
-        double averageExpenses;
-
-        if (totalExpenses == null) {
-            totalExpenses = 0.0;
-            averageExpenses = 0.0;
-        } else {
-            averageExpenses = totalExpenses / countDays;
-        }
 
         model.addAttribute("user", currentUser);
         model.addAttribute("expenses", expenses);
