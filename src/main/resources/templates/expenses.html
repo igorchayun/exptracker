@@ -9,6 +9,7 @@
         <input type="submit" value="Log Out"/>
     </form>
     <a href="/users">User list</a><br>
+    <a href="/user-expenses" th:if="${user.isAdmin()}" >All Expenses</a><br>
     <a href="/expenses/new">Enter a new expense</a><br>
     <h3>List of expenses</h3>
     <form method="get">
@@ -39,6 +40,12 @@
                 <td th:text="${expense.comment}"></td>
                 <td th:text="${expense.authorName}"></td>
                 <td><a th:href="@{'/expenses/' + ${expense.id}}">edit</a></td>
+                <td>
+                    <form action="#" th:action="@{'/expenses/' + ${expense.id} + '/delete'}"
+                          th:object="${expense}" method="post">
+                        <button type="submit">remove</button>
+                    </form>
+                </td>
             </tr>
         </tbody>
     </table>

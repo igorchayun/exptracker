@@ -32,7 +32,6 @@ public class ExpensesController {
             @RequestParam(required = false, defaultValue = "") String dateTo,
             Model model
     ) {
-
         List<Expense> expenses = expenseRepository.filterByAllParams(
                 currentUser,
                 filter,
@@ -63,6 +62,7 @@ public class ExpensesController {
             averageExpenses = totalExpenses / countDays;
         }
 
+        model.addAttribute( "user", currentUser);
         model.addAttribute("expenses", expenses);
         model.addAttribute("filter", filter);
         model.addAttribute("dateFrom", dateFrom);
@@ -95,6 +95,7 @@ public class ExpensesController {
         expenseRepository.save(expense);
 
         return "redirect:/expenses";
+
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
@@ -116,7 +117,9 @@ public class ExpensesController {
         }
 
         expenseRepository.save(editedExpense);
+
         return "redirect:/expenses";
+
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -171,6 +174,7 @@ public class ExpensesController {
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/user-expenses")
     public String expensesListOfAllUsers(
+            @AuthenticationPrincipal User currentUser,
             @RequestParam(required = false, defaultValue = "") String filter,
             @RequestParam(required = false, defaultValue = "") String dateFrom,
             @RequestParam(required = false, defaultValue = "") String dateTo,
@@ -207,6 +211,7 @@ public class ExpensesController {
             averageExpenses = totalExpenses / countDays;
         }
 
+        model.addAttribute("user", currentUser);
         model.addAttribute("expenses", expenses);
         model.addAttribute("filter", filter);
         model.addAttribute("dateFrom", dateFrom);
@@ -215,5 +220,15 @@ public class ExpensesController {
         model.addAttribute("averageExpenses", averageExpenses);
 
         return "expenses";
+
+    }
+
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PostMapping("/expenses/{expense}/delete")
+    public String deleteExpense(@PathVariable Expense expense) {
+
+        expenseRepository.delete(expense);
+        return "redirect:/expenses";
+
     }
 }
