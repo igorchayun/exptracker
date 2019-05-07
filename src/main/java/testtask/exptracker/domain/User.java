@@ -110,4 +110,8 @@ public class User implements UserDetails {
         return (isManager() && (roles.size() == 1));
     }
 
+    public boolean isUser() {
+        return roles != null && roles.contains(Role.USER);
+    }
+
 }

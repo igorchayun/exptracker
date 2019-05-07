@@ -13,6 +13,8 @@
     <h3>List of expenses</h3>
     <form method="get">
         <input type="text" name="filter" th:value="${filter}">
+        <input type="date" name="dateFrom" th:value="${dateFrom}">
+        <input type="date" name="dateTo" th:value="${dateTo}">
         <button type="submit">Find</button>
     </form>
     <table>
@@ -40,5 +42,7 @@
             </tr>
         </tbody>
     </table>
+    <p th:text="'Total expenses = ' + ${totalExpenses} "></p>
+    <p th:text="'Average expenses per day = ' + ${averageExpenses} "></p>
 </body>
 </html>

@@ -17,4 +17,23 @@ public interface ExpenseRepository extends CrudRepository<Expense, Long> {
                              @Param("search")String search,
                              @Param("dateFrom") LocalDate dateFrom,
                              @Param("dateTo") LocalDate dateTo);
+
+    @Query("select sum(e.cost) from Expense e " +
+            "where ((:user is null) or e.author = :user) " +
+            "and ((:search is null) or (e.text like %:search%) or (e.comment like %:search%)) " +
+            "and ((:dateFrom is null) or (:dateTo is null) or (e.date between :dateFrom and :dateTo))")
+    Double sumByAllParams(@Param("user") User user,
+                                    @Param("search")String search,
+                                    @Param("dateFrom") LocalDate dateFrom,
+                                    @Param("dateTo") LocalDate dateTo);
+
+    @Query("select count(distinct e.date) from Expense e " +
+            "where ((:user is null) or e.author = :user) " +
+            "and ((:search is null) or (e.text like %:search%) or (e.comment like %:search%)) " +
+            "and ((:dateFrom is null) or (:dateTo is null) or (e.date between :dateFrom and :dateTo))")
+    Long countDaysByAllParams(@Param("user") User user,
+                          @Param("search")String search,
+                          @Param("dateFrom") LocalDate dateFrom,
+                          @Param("dateTo") LocalDate dateTo);
+
 }
