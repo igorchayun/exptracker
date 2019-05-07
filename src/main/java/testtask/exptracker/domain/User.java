@@ -33,17 +33,6 @@ public class User implements UserDetails {
     @NotNull
     private Set<Role> roles;
 
-    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<Expense> expenses;
-
-    public Set<Expense> getExpenses() {
-        return expenses;
-    }
-
-    public void setExpenses(Set<Expense> expenses) {
-        this.expenses = expenses;
-    }
-
     public Long getId() {
         return id;
     }
@@ -54,6 +43,10 @@ public class User implements UserDetails {
 
     public String getUsername() {
         return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     @Override
@@ -74,10 +67,6 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return isActive();
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     @Override

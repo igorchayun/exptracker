@@ -14,12 +14,33 @@ import testtask.exptracker.domain.Expense;
 import testtask.exptracker.domain.User;
 import testtask.exptracker.repository.ExpenseRepository;
 import javax.validation.Valid;
+import java.util.List;
 
 @Controller
 public class ExpensesController {
 
     @Autowired
     private ExpenseRepository expenseRepository;
+
+    @PreAuthorize("hasAnyAuthority('ADMIN','USER')")
+    @GetMapping("/expenses")
+    public String expensesList(
+            @AuthenticationPrincipal User currentUser,
+            @RequestParam(required = false, defaultValue = "") String filter,
+            Model model
+    ) {
+        List<Expense> expenses = expenseRepository.filterByAllParams(
+                currentUser.isAdmin() ? null : currentUser,
+                filter,
+                null,
+                null
+        );
+
+        model.addAttribute("expenses", expenses);
+        model.addAttribute("filter", filter);
+
+        return "expenses";
+    }
 
     @PreAuthorize("hasAnyAuthority('ADMIN','USER')")
     @GetMapping("/expenses/new")
@@ -45,54 +66,6 @@ public class ExpensesController {
         return "redirect:/expenses";
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN','USER')")
-    @GetMapping("/expenses")
-    public String expensesList(
-            @AuthenticationPrincipal User currentUser,
-            @RequestParam(required = false, defaultValue = "") String filter,
-            Model model
-    ) {
-        Iterable<Expense> expenses;
-
-        if (currentUser.isAdmin()) {
-            if (filter != null && !filter.isEmpty()) {
-                expenses = expenseRepository.findByTextOrComment(filter, filter);
-            } else {
-                expenses = expenseRepository.findAll();
-            }
-        } else {
-            if (filter != null && !filter.isEmpty()) {
-                expenses = expenseRepository.findByAuthorAndText(currentUser, filter);
-            } else {
-                expenses = expenseRepository.findByAuthor(currentUser);
-            }
-        }
-
-        model.addAttribute("expenses", expenses);
-        model.addAttribute("filter", filter);
-
-        return "expenses";
-    }
-
-    @PreAuthorize("hasAuthority('ADMIN')")
-    @GetMapping("/user-expenses/{user}")
-    public String userExpenses(
-            @AuthenticationPrincipal User currentUser,
-            @PathVariable User user,
-            @RequestParam(required = false, defaultValue = "") String filter,
-            Model model
-    ) {
-        Iterable<Expense> expenses;
-        if (filter != null && !filter.isEmpty()) {
-            expenses = expenseRepository.findByAuthorAndText(user, filter);
-        } else {
-            expenses = user.getExpenses();
-        }
-
-        model.addAttribute("expenses", expenses);
-        return "expenses";
-    }
-
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping("/expenses/{expense}")
     public String showEditExpenseForm(@PathVariable Expense expense, Model model) {
@@ -114,4 +87,24 @@ public class ExpensesController {
         expenseRepository.save(editedExpense);
         return "redirect:/expenses";
     }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("/user-expenses/{user}")
+    public String userExpenses(
+            @PathVariable User user,
+            @RequestParam(required = false, defaultValue = "") String filter,
+            Model model
+    ) {
+        List<Expense> expenses = expenseRepository.filterByAllParams(
+                user,
+                filter,
+                null,
+                null
+        );
+
+        model.addAttribute("expenses", expenses);
+        model.addAttribute("filter", filter);
+        return "expenses";
+    }
+
 }
