@@ -6,17 +6,21 @@ import org.springframework.web.bind.annotation.*;
 import testtask.exptracker.domain.Expense;
 import testtask.exptracker.repository.ExpenseRepository;
 import testtask.exptracker.service.ExpenseService;
-
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/expenses")
-public class RestExpensesController {
-    @Autowired
-    private ExpenseRepository expenseRepository;
+public class ExpensesRestController {
+
+    private final ExpenseRepository expenseRepository;
+
+    private final ExpenseService expenseService;
 
     @Autowired
-    private ExpenseService expenseService;
+    public ExpensesRestController(ExpenseRepository expenseRepository, ExpenseService expenseService) {
+        this.expenseRepository = expenseRepository;
+        this.expenseService = expenseService;
+    }
 
     @GetMapping
     public List<Expense> list() {

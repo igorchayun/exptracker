@@ -1,5 +1,6 @@
 package testtask.exptracker.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,6 +24,7 @@ public class User implements UserDetails {
     @Length(max = 255, message = "Password too long")
     @Length(min = 1, message = "Password field must contain more than 1 character")
     @NotNull
+    @JsonIgnore
     private String password;
 
     private boolean active;
@@ -49,26 +51,31 @@ public class User implements UserDetails {
         this.username = username;
     }
 
+    @JsonIgnore
     @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isEnabled() {
         return isActive();
     }
 
+    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return getRoles();
@@ -98,20 +105,25 @@ public class User implements UserDetails {
         this.roles = roles;
     }
 
+    @JsonIgnore
     public boolean isAdmin() {
         return roles != null && roles.contains(Role.ADMIN);
     }
 
+    @JsonIgnore
     public boolean isManager() {
         return roles != null && roles.contains(Role.MANAGER);
     }
 
+    @JsonIgnore
     public boolean isManagerOnly() {
         return (isManager() && (roles.size() == 1));
     }
 
+    @JsonIgnore
     public boolean isUser() {
         return roles != null && roles.contains(Role.USER);
     }
+
 
 }

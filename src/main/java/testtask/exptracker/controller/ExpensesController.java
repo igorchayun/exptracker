@@ -20,11 +20,15 @@ import java.util.List;
 @Controller
 public class ExpensesController {
 
-    @Autowired
-    private ExpenseRepository expenseRepository;
+    private final ExpenseRepository expenseRepository;
+
+    private final ExpenseService expenseService;
 
     @Autowired
-    private ExpenseService expenseService;
+    public ExpensesController(ExpenseRepository expenseRepository, ExpenseService expenseService) {
+        this.expenseRepository = expenseRepository;
+        this.expenseService = expenseService;
+    }
 
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     @GetMapping("/expenses")

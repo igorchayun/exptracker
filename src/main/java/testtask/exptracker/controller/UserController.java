@@ -7,31 +7,31 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import testtask.exptracker.domain.Role;
 import testtask.exptracker.domain.User;
 import testtask.exptracker.service.UserService;
 import javax.validation.Valid;
-import java.util.EnumSet;
 
 @Controller
 @RequestMapping("/users")
 @PreAuthorize("hasAnyAuthority('ADMIN','MANAGER')")
 public class UserController {
+
+    private final UserService userService;
+
     @Autowired
-    private UserService userService;
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping
     public String userList(
             @AuthenticationPrincipal User currentUser,
-            @RequestParam(required = false, defaultValue = "") String filterUsr,
+            @RequestParam(required = false, defaultValue = "") String filter,
             Model model
     ) {
-        if (currentUser.isAdmin()) {
-            model.addAttribute("users", userService.findAllUsers(filterUsr));
-        } else {
-            model.addAttribute("users", userService.findUsersNonAdmins(filterUsr));
-        }
-        model.addAttribute("filterUsr", filterUsr);
+
+        model.addAttribute("users", userService.findUsers(currentUser, filter));
+        model.addAttribute("filterUsr", filter);
         model.addAttribute("curUserIsAdmin", currentUser.isAdmin());
 
         return "users";
@@ -39,13 +39,13 @@ public class UserController {
 
     @GetMapping("{user}")
     public String userEditForm(@AuthenticationPrincipal User currentUser, @PathVariable User user, Model model) {
-        model.addAttribute("user", user);
-        if (currentUser.isAdmin()) {
-            model.addAttribute("allRoles", Role.values());
-        } else {
-            EnumSet<Role> managerRoles = EnumSet.of(Role.USER, Role.MANAGER );
-            model.addAttribute("allRoles", managerRoles);
+
+        if (currentUser.isManager() && user.isAdmin()) {
+            return "redirect:/users";
         }
+        model.addAttribute("allRoles", userService.getAllowedRoles(currentUser));
+        model.addAttribute("user", user);
+
         return "userEdit";
     }
 
@@ -57,17 +57,12 @@ public class UserController {
             @RequestParam String newPassword,
             Model model
     ) {
-        if (currentUser.isAdmin()) {
-            model.addAttribute("allRoles", Role.values());
-        } else {
-            model.addAttribute("allRoles", EnumSet.of(Role.USER, Role.MANAGER ));
-        }
+        model.addAttribute("allRoles", userService.getAllowedRoles(currentUser));
 
         if (bindingResult.hasErrors()) {
             return "userEdit";
         }
-
-        if (userService.saveUser(user, newPassword) == null) {
+        if (userService.saveUser(currentUser, user, newPassword) == null) {
             model.addAttribute("usernameError", "User exists!");
             return "userEdit";
         }
@@ -77,11 +72,7 @@ public class UserController {
     @GetMapping("/new")
     public String addNewUserForm(@AuthenticationPrincipal User currentUser, User user, Model model) {
         model.addAttribute("user", user);
-        if (currentUser.isAdmin()) {
-            model.addAttribute("allRoles", Role.values());
-        } else {
-            model.addAttribute("allRoles", EnumSet.of(Role.USER, Role.MANAGER ));
-        }
+        model.addAttribute("allRoles", userService.getAllowedRoles(currentUser));
         return "userAdd";
     }
 
@@ -92,17 +83,13 @@ public class UserController {
             BindingResult bindingResult,
             Model model
     ) {
-        if (currentUser.isAdmin()) {
-            model.addAttribute("allRoles", Role.values());
-        } else {
-            model.addAttribute("allRoles", EnumSet.of(Role.USER, Role.MANAGER ));
-        }
+        model.addAttribute("allRoles", userService.getAllowedRoles(currentUser));
 
         if(bindingResult.hasErrors()) {
             return "userAdd";
         }
 
-        if (userService.addNewUser(user) == null) {
+        if (userService.addNewUser(currentUser, user) == null) {
             model.addAttribute("usernameError", "User exists!");
             return "userAdd";
         }

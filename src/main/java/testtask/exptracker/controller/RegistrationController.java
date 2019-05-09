@@ -12,8 +12,13 @@ import javax.validation.Valid;
 
 @Controller
 public class RegistrationController {
+
+    private final UserService userService;
+
     @Autowired
-    private UserService userService;
+    public RegistrationController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping("/registration")
     public String registration(User user, Model model) {
@@ -28,7 +33,7 @@ public class RegistrationController {
             return "registration";
         }
 
-        if (userService.addUser(user) == null) {
+        if (userService.registerUser(user) == null) {
             model.addAttribute("usernameError", "User exists!");
             return "registration";
         }
