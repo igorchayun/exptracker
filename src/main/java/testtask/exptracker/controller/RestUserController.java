@@ -4,9 +4,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import testtask.exptracker.domain.User;
-import testtask.exptracker.repository.UserRepository;
 import testtask.exptracker.service.UserService;
-
 import java.util.List;
 
 @RestController
@@ -14,9 +12,6 @@ import java.util.List;
 public class RestUserController {
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private UserRepository userRepository;
 
     @GetMapping
     public List<User> list() {
@@ -30,17 +25,17 @@ public class RestUserController {
 
     @PostMapping
     public User create(@RequestBody User user) {
-        return userRepository.save(user);
+        return userService.addNewUser(user);
     }
 
     @PutMapping("{id}")
     public User update(@PathVariable("id") User userFromDb, @RequestBody User user) {
         BeanUtils.copyProperties(user, userFromDb, "id");
-        return userRepository.save(userFromDb);
+        return userService.saveUser(userFromDb, null);
     }
 
     @DeleteMapping("{id}")
     public void delete(@PathVariable("id") User user) {
-        userRepository.delete(user);
+        userService.deleteUser(user);
     }
 }

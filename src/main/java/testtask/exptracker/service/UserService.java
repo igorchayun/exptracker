@@ -38,18 +38,17 @@ public class UserService implements UserDetailsService {
         return userFromDb != null;
     }
 
-    public boolean addUser(User user) {
+    public User addUser(User user) {
 
         if (isUsernameExist(user.getUsername())) {
-            return false;
+            return null;
         }
 
         user.setActive(true);
         user.setRoles(Collections.singleton(Role.USER));
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        userRepository.save(user);
-        return true;
+        return userRepository.save(user);
     }
 
     public List<User> findAllUsers(String filter) {
@@ -66,27 +65,30 @@ public class UserService implements UserDetailsService {
         return userRepository.findByRolesNotContaining(Role.ADMIN);
     }
 
-    public boolean saveUser(User user, String newPassword) {
+    public User saveUser(User user, String newPassword) {
         User otherUserFromDb = userRepository.findByUsernameAndIdNot(user.getUsername(),user.getId());
         if (otherUserFromDb != null) {
-            return false;
+            return null;
         }
         if (!StringUtils.isEmpty(newPassword)) {
             user.setPassword(passwordEncoder.encode(newPassword));
         }
 
-        userRepository.save(user);
-        return true;
+        return userRepository.save(user);
     }
 
-    public boolean addNewUser(User user) {
+    public User addNewUser(User user) {
         if (isUsernameExist(user.getUsername())) {
-            return false;
+            return null;
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
+        return userRepository.save(user);
+    }
+
+    public void deleteUser(User user) {
+        user.setActive(false);
         userRepository.save(user);
-        return true;
     }
 }

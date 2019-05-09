@@ -67,9 +67,7 @@ public class UserController {
             return "userEdit";
         }
 
-        boolean isUserSaved = userService.saveUser(user, newPassword);
-
-        if (!isUserSaved) {
+        if (userService.saveUser(user, newPassword) == null) {
             model.addAttribute("usernameError", "User exists!");
             return "userEdit";
         }
@@ -104,9 +102,7 @@ public class UserController {
             return "userAdd";
         }
 
-        boolean isNewUserAdded = userService.addNewUser(user);
-
-        if (!isNewUserAdded) {
+        if (userService.addNewUser(user) == null) {
             model.addAttribute("usernameError", "User exists!");
             return "userAdd";
         }
