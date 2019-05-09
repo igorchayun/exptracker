@@ -48,4 +48,16 @@ public class ExpenseService {
 
     }
 
+//    public Expense getOneExpense(String strId) {
+//        try {
+//            Long id = Long.valueOf(strId);
+//            Expense expense = expenseRepository.getOne(id);
+//            return expense;
+//        } catch (NumberFormatException nfe) {
+//            //наверное стоит выдавать 404
+//            return null;
+//        } catch (EntityNotFoundException enf) {
+//            return null;
+//        }
+//    }
 }

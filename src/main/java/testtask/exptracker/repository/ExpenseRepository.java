@@ -1,13 +1,14 @@
 package testtask.exptracker.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import testtask.exptracker.domain.Expense;
 import testtask.exptracker.domain.User;
 import java.time.LocalDate;
 import java.util.List;
 
-public interface ExpenseRepository extends CrudRepository<Expense, Long> {
+public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
     @Query("select e from Expense e " +
             "where ((:user is null) or e.author = :user) " +
