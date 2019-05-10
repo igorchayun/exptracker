@@ -15,15 +15,16 @@ import java.util.List;
 public class UserRestController {
 
     private final UserService userService;
-
     @Autowired
     public UserRestController(UserService userService) {
         this.userService = userService;
     }
 
     @GetMapping
-    public List<User> list(@AuthenticationPrincipal User currentUser,
-                           @RequestParam(required = false, defaultValue = "") String filter) {
+    public List<User> list(
+            @AuthenticationPrincipal User currentUser,
+            @RequestParam(required = false, defaultValue = "") String filter
+    ) {
         return userService.findUsers(currentUser, filter);
     }
 
@@ -38,9 +39,10 @@ public class UserRestController {
     }
 
     @PutMapping("{id}")
-    public User update(@AuthenticationPrincipal User currentUser,
-                       @PathVariable("id") User userFromDb,
-                       @RequestBody User user
+    public User update(
+            @AuthenticationPrincipal User currentUser,
+            @PathVariable("id") User userFromDb,
+            @RequestBody User user
     ) {
         BeanUtils.copyProperties(user, userFromDb, "id");
         return userService.saveUser(currentUser, userFromDb, null);

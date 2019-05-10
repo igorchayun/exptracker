@@ -15,9 +15,7 @@ import javax.validation.Valid;
 @RequestMapping("/users")
 @PreAuthorize("hasAnyAuthority('ADMIN','MANAGER')")
 public class UserController {
-
     private final UserService userService;
-
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
@@ -29,23 +27,19 @@ public class UserController {
             @RequestParam(required = false, defaultValue = "") String filter,
             Model model
     ) {
-
         model.addAttribute("users", userService.findUsers(currentUser, filter));
         model.addAttribute("filterUsr", filter);
         model.addAttribute("curUserIsAdmin", currentUser.isAdmin());
-
         return "users";
     }
 
     @GetMapping("{user}")
     public String userEditForm(@AuthenticationPrincipal User currentUser, @PathVariable User user, Model model) {
-
         if (currentUser.isManager() && user.isAdmin()) {
             return "redirect:/users";
         }
         model.addAttribute("allRoles", userService.getAllowedRoles(currentUser));
         model.addAttribute("user", user);
-
         return "userEdit";
     }
 
@@ -58,7 +52,6 @@ public class UserController {
             Model model
     ) {
         model.addAttribute("allRoles", userService.getAllowedRoles(currentUser));
-
         if (bindingResult.hasErrors()) {
             return "userEdit";
         }
@@ -84,11 +77,9 @@ public class UserController {
             Model model
     ) {
         model.addAttribute("allRoles", userService.getAllowedRoles(currentUser));
-
         if(bindingResult.hasErrors()) {
             return "userAdd";
         }
-
         if (userService.addNewUser(currentUser, user) == null) {
             model.addAttribute("usernameError", "User exists!");
             return "userAdd";

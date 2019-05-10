@@ -1,22 +1,23 @@
 package testtask.exptracker.service;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import testtask.exptracker.domain.Expense;
 import testtask.exptracker.domain.User;
 import testtask.exptracker.exceptions.BadRequestException;
 import testtask.exptracker.exceptions.ForbiddenException;
+import testtask.exptracker.exceptions.NotFoundException;
 import testtask.exptracker.repository.ExpenseRepository;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ExpenseService {
 
     private final ExpenseRepository expenseRepository;
-
     @Autowired
     public ExpenseService(ExpenseRepository expenseRepository) {
         this.expenseRepository = expenseRepository;
@@ -51,9 +52,7 @@ public class ExpenseService {
         } catch (DateTimeParseException e) {
             throw new BadRequestException();
         }
-
         Double result = expenseRepository.sumByAllParams(user, filter, dateFrom, dateTo);
-
         return result == null ? 0.0 : result;
     }
 
@@ -69,19 +68,38 @@ public class ExpenseService {
             );
             return total/countDays;
         }
-
     }
 
-//    public Expense getOneExpense(String strId) {
-//        try {
-//            Long id = Long.valueOf(strId);
-//            Expense expense = expenseRepository.getOne(id);
-//            return expense;
-//        } catch (NumberFormatException nfe) {
-//            //наверное стоит выдавать 404
-//            return null;
-//        } catch (EntityNotFoundException enf) {
-//            return null;
-//        }
-//    }
+    public Expense getOneExpense(User currentUser, Long id) {
+        Optional<Expense> oExpense = expenseRepository.findById(id);
+        if (!oExpense.isPresent()) {
+            throw new NotFoundException();
+        }
+        Expense expense = oExpense.get();
+        if (!currentUser.isAdmin() && !currentUser.getId().equals(expense.getAuthor().getId())) {
+            throw new ForbiddenException();
+        }
+        return expense;
+    }
+
+
+    public Expense addNewExpense(User currentUser, Expense expense) {
+        expense.setAuthor(currentUser);
+        return expenseRepository.save(expense);
+    }
+
+    public Expense editExpense(User currentUser, Expense expenseFromDb, Expense expense) {
+        if (!currentUser.isAdmin() && !currentUser.getId().equals(expenseFromDb.getAuthor().getId())) {
+            throw new ForbiddenException();
+        }
+        BeanUtils.copyProperties(expense, expenseFromDb, "id", "author");
+        return expenseRepository.save(expenseFromDb);
+    }
+
+    public void deleteExpense(User currentUser, Expense expense) {
+        if (!currentUser.isAdmin() && !currentUser.getId().equals(expense.getAuthor().getId())) {
+            throw new ForbiddenException();
+        }
+        expenseRepository.delete(expense);
+    }
 }

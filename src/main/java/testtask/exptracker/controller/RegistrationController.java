@@ -14,7 +14,6 @@ import javax.validation.Valid;
 public class RegistrationController {
 
     private final UserService userService;
-
     @Autowired
     public RegistrationController(UserService userService) {
         this.userService = userService;

@@ -12,21 +12,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import testtask.exptracker.domain.Expense;
 import testtask.exptracker.domain.User;
-import testtask.exptracker.repository.ExpenseRepository;
 import testtask.exptracker.service.ExpenseService;
+
 import javax.validation.Valid;
 import java.util.List;
 
 @Controller
 public class ExpensesController {
 
-    private final ExpenseRepository expenseRepository;
-
     private final ExpenseService expenseService;
 
     @Autowired
-    public ExpensesController(ExpenseRepository expenseRepository, ExpenseService expenseService) {
-        this.expenseRepository = expenseRepository;
+    public ExpensesController(ExpenseService expenseService) {
         this.expenseService = expenseService;
     }
 
@@ -40,9 +37,7 @@ public class ExpensesController {
             Model model
     ) {
         List<Expense> expenses = expenseService.getExpenses(currentUser, filter, dateFrom, dateTo);
-
         Double totalExpenses = expenseService.getTotalExpenses(currentUser, filter, dateFrom, dateTo);
-
         Double averageExpenses = expenseService.getAverageExpenses(
                 currentUser,
                 filter,
@@ -50,7 +45,6 @@ public class ExpensesController {
                 dateTo,
                 totalExpenses
         );
-
         model.addAttribute( "user", currentUser);
         model.addAttribute("expenses", expenses);
         model.addAttribute("filter", filter);
@@ -58,7 +52,6 @@ public class ExpensesController {
         model.addAttribute("dateTo", dateTo);
         model.addAttribute("totalExpenses", totalExpenses);
         model.addAttribute("averageExpenses", averageExpenses);
-
         return "expenses";
     }
 
@@ -72,43 +65,41 @@ public class ExpensesController {
     @PreAuthorize("hasAnyAuthority('ADMIN','USER')")
     @PostMapping("/expenses/new")
     public String addExpense(
-            @AuthenticationPrincipal User user,
+            @AuthenticationPrincipal User currentUser,
             @Valid Expense expense,
             BindingResult bindingResult
     ){
         if (bindingResult.hasErrors()) {
             return "expenseAdd";
         }
-
-        expense.setAuthor(user);
-        expenseRepository.save(expense);
-
+        expenseService.addNewExpense(currentUser, expense);
         return "redirect:/expenses";
-
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    @GetMapping("/expenses/{expense}")
-    public String showEditExpenseForm(@PathVariable Expense expense, Model model) {
-        model.addAttribute("expense",expense);
+    @GetMapping("/expenses/{id}")
+    public String showEditExpenseForm(
+            @AuthenticationPrincipal User currentUser,
+            @PathVariable Long id,
+            Model model
+    ) {
+        model.addAttribute("expense",expenseService.getOneExpense(currentUser, id));
         return "expenseEdit";
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    @PostMapping("/expenses/{expense}")
+    @PostMapping("/expenses/{id}")
     public String editExpense(
-            @PathVariable Long expense,
-            @Valid Expense editedExpense,
+            @AuthenticationPrincipal User currentUser,
+            @PathVariable("id") Expense expenseFromDb,
+            @Valid Expense expense,
             BindingResult bindingResult
     ) {
         if (bindingResult.hasErrors()) {
             return "expenseEdit";
         }
-
-        expenseRepository.save(editedExpense);
-
+        expenseService.editExpense(currentUser, expenseFromDb, expense);
         return "redirect:/expenses";
-
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -121,9 +112,7 @@ public class ExpensesController {
             Model model
     ) {
         List<Expense> expenses = expenseService.getExpenses( user, filter, dateFrom, dateTo);
-
         Double totalExpenses = expenseService.getTotalExpenses( user, filter, dateFrom, dateTo);
-
         Double averageExpenses = expenseService.getAverageExpenses(
                 user,
                 filter,
@@ -131,14 +120,12 @@ public class ExpensesController {
                 dateTo,
                 totalExpenses
         );
-
         model.addAttribute("expenses", expenses);
         model.addAttribute("filter", filter);
         model.addAttribute("dateFrom", dateFrom);
         model.addAttribute("dateTo", dateTo);
         model.addAttribute("totalExpenses", totalExpenses);
         model.addAttribute("averageExpenses", averageExpenses);
-
         return "expenses";
     }
 
@@ -151,11 +138,8 @@ public class ExpensesController {
             @RequestParam(required = false, defaultValue = "") String dateTo,
             Model model
     ) {
-
         List<Expense> expenses = expenseService.getExpenses( null, filter, dateFrom, dateTo);
-
         Double totalExpenses = expenseService.getTotalExpenses( null, filter, dateFrom, dateTo);
-
         Double averageExpenses = expenseService.getAverageExpenses(
                 null,
                 filter,
@@ -163,7 +147,6 @@ public class ExpensesController {
                 dateTo,
                 totalExpenses
         );
-
         model.addAttribute("user", currentUser);
         model.addAttribute("expenses", expenses);
         model.addAttribute("filter", filter);
@@ -171,16 +154,14 @@ public class ExpensesController {
         model.addAttribute("dateTo", dateTo);
         model.addAttribute("totalExpenses", totalExpenses);
         model.addAttribute("averageExpenses", averageExpenses);
-
         return "expenses";
 
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping("/expenses/{expense}/delete")
-    public String deleteExpense(@PathVariable Expense expense) {
-
-        expenseRepository.delete(expense);
+    public String deleteExpense(@AuthenticationPrincipal User currentUser, @PathVariable Expense expense) {
+        expenseService.deleteExpense(currentUser, expense);
         return "redirect:/expenses";
     }
 }
