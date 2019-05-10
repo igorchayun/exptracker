@@ -2,34 +2,58 @@ package testtask.exptracker.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import testtask.exptracker.domain.Expense;
 import testtask.exptracker.domain.User;
+import testtask.exptracker.exceptions.BadRequestException;
+import testtask.exptracker.exceptions.ForbiddenException;
 import testtask.exptracker.repository.ExpenseRepository;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 @Service
 public class ExpenseService {
 
-    @Autowired
-    private ExpenseRepository expenseRepository;
+    private final ExpenseRepository expenseRepository;
 
-    public List<Expense> getExpenses(User user, String filter, String dateFrom, String dateTo) {
-        return expenseRepository.filterByAllParams(
-                user,
-                filter,
-                dateFrom.equals("") ? null : LocalDate.parse(dateFrom),
-                dateTo.equals("") ? null : LocalDate.parse(dateTo)
-        );
+    @Autowired
+    public ExpenseService(ExpenseRepository expenseRepository) {
+        this.expenseRepository = expenseRepository;
     }
 
-    public Double getTotalExpenses(User user, String filter, String dateFrom, String dateTo) {
-        Double result = expenseRepository.sumByAllParams(
-                user,
-                filter,
-                dateFrom.equals("") ? null : LocalDate.parse(dateFrom),
-                dateTo.equals("") ? null : LocalDate.parse(dateTo)
-        );
+    public List<Expense> getExpenses(User user, String filter, String strDateFrom, String strDateTo) {
+        LocalDate dateFrom = null;
+        LocalDate dateTo = null;
+        try {
+            if (!strDateFrom.equals("")) {
+                dateFrom = LocalDate.parse(strDateFrom);
+            }
+            if (!strDateTo.equals("")) {
+                dateTo = LocalDate.parse(strDateTo);
+            }
+        } catch (DateTimeParseException e) {
+            throw new BadRequestException();
+        }
+        return expenseRepository.filterByAllParams(user, filter, dateFrom, dateTo);
+    }
+
+    public Double getTotalExpenses(User user, String filter, String strDateFrom, String strDateTo) {
+        LocalDate dateFrom = null;
+        LocalDate dateTo = null;
+        try {
+            if (!strDateFrom.equals("")) {
+                dateFrom = LocalDate.parse(strDateFrom);
+            }
+            if (!strDateTo.equals("")) {
+                dateTo = LocalDate.parse(strDateTo);
+            }
+        } catch (DateTimeParseException e) {
+            throw new BadRequestException();
+        }
+
+        Double result = expenseRepository.sumByAllParams(user, filter, dateFrom, dateTo);
+
         return result == null ? 0.0 : result;
     }
 

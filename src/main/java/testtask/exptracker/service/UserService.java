@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import testtask.exptracker.domain.Role;
 import testtask.exptracker.domain.User;
-import testtask.exptracker.exceptions.Forbidden;
+import testtask.exptracker.exceptions.ForbiddenException;
 import testtask.exptracker.exceptions.NotFoundException;
 import testtask.exptracker.repository.UserRepository;
 import java.util.Collections;
@@ -81,7 +81,7 @@ public class UserService implements UserDetailsService {
         }
         User user = oUser.get();
         if (currentUser.isManager() && user.isAdmin()) {
-            throw new Forbidden();
+            throw new ForbiddenException();
         }
         return user;
     }
@@ -96,7 +96,7 @@ public class UserService implements UserDetailsService {
 
     public User saveUser(User currentUser, User user, String newPassword) {
         if (currentUser.isManager() && user.isAdmin()) {
-            throw new Forbidden();
+            throw new ForbiddenException();
         }
         User otherUserFromDb = userRepository.findByUsernameAndIdNot(user.getUsername(),user.getId());
         if (otherUserFromDb != null) {
@@ -113,7 +113,7 @@ public class UserService implements UserDetailsService {
             return null;
         }
         if (currentUser.isManager() && user.isAdmin()) {
-            throw new Forbidden();
+            throw new ForbiddenException();
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
@@ -122,7 +122,7 @@ public class UserService implements UserDetailsService {
 
     public void deleteUser(User currentUser, User user) {
         if (currentUser.isManager() && user.isAdmin()) {
-            throw new Forbidden();
+            throw new ForbiddenException();
         }
         user.setActive(false);
         userRepository.save(user);

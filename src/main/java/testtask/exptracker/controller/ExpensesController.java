@@ -182,6 +182,5 @@ public class ExpensesController {
 
         expenseRepository.delete(expense);
         return "redirect:/expenses";
-
     }
 }
