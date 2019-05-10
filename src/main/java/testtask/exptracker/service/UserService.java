@@ -54,12 +54,12 @@ public class UserService implements UserDetailsService {
 
     public List<User> findUsers(User currentUser, String filter){
         if (currentUser.isAdmin()) {
-            if (filter != null && !filter.isEmpty()) {
+            if (!StringUtils.isEmpty(filter)) {
                 return userRepository.findByUsernameContaining(filter);
             }
             return userRepository.findAll();
         } else {
-            if (filter != null && !filter.isEmpty()) {
+            if (!StringUtils.isEmpty(filter)) {
                 return userRepository.findByUsernameContainingAndRolesNotContaining(filter, Role.ADMIN);
             }
             return userRepository.findByRolesNotContaining(Role.ADMIN);

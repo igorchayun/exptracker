@@ -3,6 +3,7 @@ package testtask.exptracker.service;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import testtask.exptracker.domain.Expense;
 import testtask.exptracker.domain.User;
 import testtask.exptracker.exceptions.BadRequestException;
@@ -13,6 +14,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
+
+import static java.time.temporal.ChronoUnit.DAYS;
 
 @Service
 public class ExpenseService {
@@ -27,10 +30,10 @@ public class ExpenseService {
         LocalDate dateFrom = null;
         LocalDate dateTo = null;
         try {
-            if (!strDateFrom.equals("")) {
+            if (!StringUtils.isEmpty(strDateFrom)) {
                 dateFrom = LocalDate.parse(strDateFrom);
             }
-            if (!strDateTo.equals("")) {
+            if (!StringUtils.isEmpty(strDateTo)) {
                 dateTo = LocalDate.parse(strDateTo);
             }
         } catch (DateTimeParseException e) {
@@ -39,33 +42,53 @@ public class ExpenseService {
         return expenseRepository.filterByAllParams(user, filter, dateFrom, dateTo);
     }
 
-    public Double getTotalExpenses(User user, String filter, String strDateFrom, String strDateTo) {
+    public Double getTotalExpenses(User user, String strDateFrom, String strDateTo) {
         LocalDate dateFrom = null;
         LocalDate dateTo = null;
         try {
-            if (!strDateFrom.equals("")) {
+            if (!StringUtils.isEmpty(strDateFrom)) {
                 dateFrom = LocalDate.parse(strDateFrom);
             }
-            if (!strDateTo.equals("")) {
+            if (!StringUtils.isEmpty(strDateTo)) {
                 dateTo = LocalDate.parse(strDateTo);
             }
         } catch (DateTimeParseException e) {
             throw new BadRequestException();
         }
-        Double result = expenseRepository.sumByAllParams(user, filter, dateFrom, dateTo);
+        Double result = expenseRepository.sumByAllParams(user, null, dateFrom, dateTo);
         return result == null ? 0.0 : result;
     }
 
-    public Double getAverageExpenses(User user, String filter, String dateFrom, String dateTo, Double total) {
+    public Double getAverageExpenses(
+            User user,
+            String strDateFrom,
+            String strDateTo,
+            Double total
+    ) {
+        LocalDate dateFrom;
+        LocalDate dateTo;
         if (total.equals(0.0)) {
             return 0.0;
         } else {
-            Long countDays = expenseRepository.countDaysByAllParams(
-                    user,
-                    filter,
-                    dateFrom.equals("") ? null : LocalDate.parse(dateFrom),
-                    dateTo.equals("") ? null : LocalDate.parse(dateTo)
-            );
+            if(StringUtils.isEmpty(strDateFrom)){
+                dateFrom = expenseRepository.minDate(user);
+            } else {
+                try{
+                    dateFrom = LocalDate.parse(strDateFrom);
+                } catch (DateTimeParseException e) {
+                    throw new BadRequestException();
+                }
+            }
+            if(StringUtils.isEmpty(strDateTo)){
+                dateTo = LocalDate.now();
+            } else {
+                try{
+                    dateTo = LocalDate.parse(strDateTo);
+                } catch (DateTimeParseException e) {
+                    throw new BadRequestException();
+                }
+            }
+            Long countDays = DAYS.between(dateFrom, dateTo) + 1;
             return total/countDays;
         }
     }
@@ -81,7 +104,6 @@ public class ExpenseService {
         }
         return expense;
     }
-
 
     public Expense addNewExpense(User currentUser, Expense expense) {
         expense.setAuthor(currentUser);

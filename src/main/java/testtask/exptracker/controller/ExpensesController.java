@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import testtask.exptracker.domain.Expense;
 import testtask.exptracker.domain.User;
 import testtask.exptracker.service.ExpenseService;
-
 import javax.validation.Valid;
 import java.util.List;
 
@@ -37,14 +36,10 @@ public class ExpensesController {
             Model model
     ) {
         List<Expense> expenses = expenseService.getExpenses(currentUser, filter, dateFrom, dateTo);
-        Double totalExpenses = expenseService.getTotalExpenses(currentUser, filter, dateFrom, dateTo);
-        Double averageExpenses = expenseService.getAverageExpenses(
-                currentUser,
-                filter,
-                dateFrom,
-                dateTo,
-                totalExpenses
-        );
+
+        Double totalExpenses = expenseService.getTotalExpenses(currentUser, dateFrom, dateTo);
+        Double averageExpenses = expenseService.getAverageExpenses(currentUser,dateFrom, dateTo, totalExpenses);
+
         model.addAttribute( "user", currentUser);
         model.addAttribute("expenses", expenses);
         model.addAttribute("filter", filter);
@@ -111,15 +106,10 @@ public class ExpensesController {
             @RequestParam(required = false, defaultValue = "") String dateTo,
             Model model
     ) {
-        List<Expense> expenses = expenseService.getExpenses( user, filter, dateFrom, dateTo);
-        Double totalExpenses = expenseService.getTotalExpenses( user, filter, dateFrom, dateTo);
-        Double averageExpenses = expenseService.getAverageExpenses(
-                user,
-                filter,
-                dateFrom,
-                dateTo,
-                totalExpenses
-        );
+        List<Expense> expenses = expenseService.getExpenses(user, filter, dateFrom, dateTo);
+        Double totalExpenses = expenseService.getTotalExpenses(user, dateFrom, dateTo);
+        Double averageExpenses = expenseService.getAverageExpenses(user, dateFrom, dateTo, totalExpenses);
+
         model.addAttribute("expenses", expenses);
         model.addAttribute("filter", filter);
         model.addAttribute("dateFrom", dateFrom);
@@ -139,14 +129,9 @@ public class ExpensesController {
             Model model
     ) {
         List<Expense> expenses = expenseService.getExpenses( null, filter, dateFrom, dateTo);
-        Double totalExpenses = expenseService.getTotalExpenses( null, filter, dateFrom, dateTo);
-        Double averageExpenses = expenseService.getAverageExpenses(
-                null,
-                filter,
-                dateFrom,
-                dateTo,
-                totalExpenses
-        );
+        Double totalExpenses = expenseService.getTotalExpenses( null, dateFrom, dateTo);
+        Double averageExpenses = expenseService.getAverageExpenses(null, dateFrom, dateTo, totalExpenses);
+
         model.addAttribute("user", currentUser);
         model.addAttribute("expenses", expenses);
         model.addAttribute("filter", filter);

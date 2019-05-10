@@ -54,4 +54,10 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
             @Param("dateFrom") LocalDate dateFrom,
             @Param("dateTo") LocalDate dateTo);
 
+
+    @Query("select min (e.date) from Expense e " +
+            "where ((:user is null) or e.author = :user)")
+    LocalDate minDate(@Param("user") User user);
+
+
 }
