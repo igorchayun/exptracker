@@ -53,15 +53,19 @@ public class MultiHttpSecurityConfig {
         protected void configure(HttpSecurity http) throws Exception {
             http
                     .authorizeRequests()
-                    .antMatchers("/", "/registration").permitAll()
-                    .anyRequest().authenticated()
-                    .and()
+                        .antMatchers("/registration", "/swagger-ui.html#/**")
+                        .permitAll()
+                        .and()
+                    .authorizeRequests()
+                        .anyRequest()
+                        .authenticated()
+                        .and()
                     .formLogin()
-                    .loginPage("/login")
-                    .permitAll()
-                    .and()
+                        .loginPage("/login")
+                        .permitAll()
+                        .and()
                     .logout()
-                    .permitAll();
+                        .permitAll();
         }
     }
 
