@@ -42,7 +42,7 @@ public class ExpenseService {
         return expenseRepository.filterByAllParams(user, filter, dateFrom, dateTo);
     }
 
-    public Double getTotalExpenses(User user, String strDateFrom, String strDateTo) {
+    public Double getTotalExpenses(User user, String filter, String strDateFrom, String strDateTo) {
         LocalDate dateFrom = null;
         LocalDate dateTo = null;
         try {
@@ -55,7 +55,7 @@ public class ExpenseService {
         } catch (DateTimeParseException e) {
             throw new BadRequestException();
         }
-        Double result = expenseRepository.sumByAllParams(user, null, dateFrom, dateTo);
+        Double result = expenseRepository.sumByAllParams(user, filter, dateFrom, dateTo);
         return result == null ? 0.0 : result;
     }
 
@@ -89,7 +89,8 @@ public class ExpenseService {
                 }
             }
             Long countDays = DAYS.between(dateFrom, dateTo) + 1;
-            return total/countDays;
+            Double result = Math.round(total/countDays * 100)/100.0;
+            return result;
         }
     }
 

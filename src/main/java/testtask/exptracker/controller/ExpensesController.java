@@ -37,7 +37,7 @@ public class ExpensesController {
     ) {
         List<Expense> expenses = expenseService.getExpenses(currentUser, filter, dateFrom, dateTo);
 
-        Double totalExpenses = expenseService.getTotalExpenses(currentUser, dateFrom, dateTo);
+        Double totalExpenses = expenseService.getTotalExpenses(currentUser, filter, dateFrom, dateTo);
         Double averageExpenses = expenseService.getAverageExpenses(currentUser,dateFrom, dateTo, totalExpenses);
 
         model.addAttribute( "user", currentUser);
@@ -107,7 +107,7 @@ public class ExpensesController {
             Model model
     ) {
         List<Expense> expenses = expenseService.getExpenses(user, filter, dateFrom, dateTo);
-        Double totalExpenses = expenseService.getTotalExpenses(user, dateFrom, dateTo);
+        Double totalExpenses = expenseService.getTotalExpenses(user, filter, dateFrom, dateTo);
         Double averageExpenses = expenseService.getAverageExpenses(user, dateFrom, dateTo, totalExpenses);
 
         model.addAttribute("expenses", expenses);
@@ -129,7 +129,7 @@ public class ExpensesController {
             Model model
     ) {
         List<Expense> expenses = expenseService.getExpenses( null, filter, dateFrom, dateTo);
-        Double totalExpenses = expenseService.getTotalExpenses( null, dateFrom, dateTo);
+        Double totalExpenses = expenseService.getTotalExpenses( null, filter, dateFrom, dateTo);
         Double averageExpenses = expenseService.getAverageExpenses(null, dateFrom, dateTo, totalExpenses);
 
         model.addAttribute("user", currentUser);

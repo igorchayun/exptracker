@@ -50,6 +50,6 @@
         </tbody>
     </table>
     <p th:text="'Total expenses = ' + ${totalExpenses} "></p>
-    <p th:text="'Average expenses per day = ' + ${averageExpenses} "></p>
+    <p th:if="${filter.isEmpty()}" th:text="'Average expenses per day = ' + ${averageExpenses} "></p>
 </body>
 </html>
