@@ -22,11 +22,6 @@ public class MultiHttpSecurityConfig {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Bean
-    public PasswordEncoder getPasswordEncoder() {
-        return new BCryptPasswordEncoder(8);
-    }
-
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userService)
                 .passwordEncoder(passwordEncoder);
@@ -43,13 +38,10 @@ public class MultiHttpSecurityConfig {
                     .and()
                     .httpBasic();
         }
-
     }
 
     @Configuration
     public static class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-
-        @Override
         protected void configure(HttpSecurity http) throws Exception {
             http
                     .authorizeRequests()

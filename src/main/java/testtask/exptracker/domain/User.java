@@ -125,5 +125,4 @@ public class User implements UserDetails {
         return roles != null && roles.contains(Role.USER);
     }
 
-
 }
