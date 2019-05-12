@@ -1,9 +1,9 @@
-##Expenses Tracker Web Application Test Task
+## Expenses Tracker Web Application Test Task
 Igor Chayun
 
 Link to view task condition: http://prntscr.com/nngrp5
 
-###Build instructions
+### Build instructions
 To build executable .jar file type the following:
 
 *mvn clean package*
@@ -14,7 +14,7 @@ To start App type the following:
 
 Go to url http://localhost:8080/
 
-###Notes
+### Notes
 * To login you can use:
 
 		login: admin
