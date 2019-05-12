@@ -28,7 +28,7 @@ public class UserController {
             Model model
     ) {
         model.addAttribute("users", userService.findUsers(currentUser, filter));
-        model.addAttribute("filterUsr", filter);
+        model.addAttribute("filter", filter);
         model.addAttribute("curUserIsAdmin", currentUser.isAdmin());
         return "users";
     }
